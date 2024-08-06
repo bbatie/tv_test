@@ -1,0 +1,57 @@
+<!-- app/views/playlists/index.html.erb -->
+<h1>IPTV Channels</h1>
+
+<%= form_with url: playlists_path, method: :get, local: true do |form| %>
+  <div>
+    <%= form.label :user_code, "Enter your user code:" %>
+    <%= form.text_field :user_code, value: params[:user_code] %>
+  </div>
+  <div>
+    <%= form.label :password, "Enter your password:" %>
+    <%= form.password_field :password, value: params[:password] %>
+  </div>
+  <div>
+    <%= form.submit "Submit" %>
+  </div>
+<% end %>
+
+<% if @categories.any? %>
+  <%= form_with url: playlists_path, method: :get, local: true do |form| %>
+    <div>
+      <%= form.label :query, "Search for a channel:" %>
+      <%= form.text_field :query, value: params[:query] %>
+      <%= hidden_field_tag :user_code, params[:user_code] %>
+      <%= hidden_field_tag :password, params[:password] %>
+      <%= form.submit "Search" %>
+    </div>
+  <% end %>
+
+  <div class="categories">
+    <% @categories.each do |category, channels| %>
+      <% if channels.any? %>
+        <h2><%= category %></h2>
+        <ul>
+          <% channels.each do |channel| %>
+            <li>
+              <a href="#" onclick="openFullScreen('<%= playlist_show_path(url: channel[:url], channel_name: channel[:title]) %>'); return false;">
+                <%= channel[:title] %>
+              </a>
+            </li>
+          <% end %>
+        </ul>
+      <% else %>
+        <p>No channels found for <%= category %>.</p>
+      <% end %>
+    <% end %>
+  </div>
+<% else %>
+  <p>No channels available. Please enter a valid user code and password.</p>
+<% end %>
+
+<script>
+  function openFullScreen(url) {
+    const width = screen.width / 1.7;
+    const height = screen.height / 1.3;
+    window.open(url, 'Popup', `fullscreen=yes, scrollbars=yes, resizable=yes, width=${width}, height=${height}`);
+  }
+</script>
